@@ -1,0 +1,102 @@
+##Batería
+use_bpm 60
+define :cymbalAndKick do ||
+  in_thread do
+    loop do
+      sample:drum_heavy_kick
+      sleep 0.5
+    end
+  end
+  in_thread do
+    loop do
+      sample :drum_cymbal_closed, amp: 0.25, pan: 0.25
+      sleep 0.25
+    end
+  end
+end
+
+define :snare do ||
+  in_thread do
+    loop do
+      sample :drum_snare_soft
+      sleep 1
+    end
+  end
+end
+
+define :quickCymbal do ||
+  in_thread do
+    loop do
+      sample :drum_cymbal_pedal, amp: 0.1
+      sleep (0.25 / 2)
+    end
+  end
+end
+
+define :bateria1 do ||
+    cymbalAndKick()
+  sleep 0.5
+  snare()
+  sleep 7.5
+  quickCymbal()
+end
+##Batería
+
+##Bajo
+riffBajo = ring("Gb","Db","E","Gb","E","Db","B3","Db");
+riffBajo2 = ring("B","Fs","A","B","A","Fs","E","Fs");
+
+
+counterBajo = 0
+define :bajo do |notas,n|
+  with_synth :fm do
+    in_thread do
+      n.times do
+        play notas[counterBajo], release: 0.2, amp: 0.4, pitch: -16
+        sleep 0.25
+        counterBajo = inc counterBajo
+      end
+      
+      
+      
+    end
+  end
+end
+
+
+##Bajo
+
+##Melodía
+riffMelodia = ring("Fs","Gs", "A", "Gs");
+riffMelodia2 = ring("D");
+counterMelodia = 0
+define :melodia do |notas, n|
+  with_fx :bpf do
+    
+    n.times do
+      use_synth :piano
+      play notas[counterMelodia], release: 1.5, amp: 1.2, pitch: -4
+      sleep 0.75
+      counterMelodia = inc counterMelodia
+      if(counterMelodia %2 == 0)
+        sleep 0.5
+      else
+      end
+    end
+  end
+end
+
+##Melodía
+
+define :composicion do
+  bateria1()
+  sleep 8;
+  bajo(riffBajo, 96);
+  sleep 16;
+  melodia(riffMelodia, 8);
+  bajo(riffBajo2, 16);
+  melodia(riffMelodia2,4);
+  bajo(riffBajo, 32);
+  melodia(riffMelodia,8);
+end
+composicion
